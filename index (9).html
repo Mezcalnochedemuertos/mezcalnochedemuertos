@@ -1,0 +1,2215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Noche de Muertos — Mezcal Artesanal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cormorant+SC:wght@300;400&family=DM+Sans:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream: #F2EDE4;
+  --ink:   #0E0D0B;
+  --smoke: #1A1917;
+  --ash:   #2A2825;
+  --gold:  #9A7B4F;
+  --gold-light: #C9A96E;
+  --serif:    Georgia, 'Cormorant Garamond', serif;
+  --serif-sc: Georgia, 'Cormorant SC', serif;
+  --sans:     'DM Sans', system-ui, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  color: var(--cream);
+  font-family: var(--serif);
+  overflow-x: hidden;
+}
+
+/* GRAIN */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.02;
+  pointer-events: none;
+  z-index: 9000;
+}
+
+/* ── CURSOR ── */
+#cursor-dot {
+  position: fixed; top: 0; left: 0;
+  width: 7px; height: 7px;
+  background: var(--gold-light);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+  transition: opacity 0.2s;
+}
+#cursor-ring {
+  position: fixed; top: 0; left: 0;
+  width: 34px; height: 34px;
+  border: 1px solid rgba(154,123,79,0.55);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.2s, width 0.3s, height 0.3s;
+}
+#cursor-dot.off, #cursor-ring.off { opacity: 0; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 1.8rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+nav > * { pointer-events: all; }
+
+.nav-logo {
+  font-family: var(--serif-sc);
+  font-size: 1rem;
+  letter-spacing: 0.45em;
+  color: var(--cream);
+  text-decoration: none;
+  font-weight: 300;
+  position: relative;
+  z-index: 1001;
+}
+
+.hamburger {
+  background: none; border: none; cursor: pointer;
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 8px;
+  position: relative; z-index: 1002;
+}
+.hamburger span {
+  display: block;
+  width: 26px; height: 1px;
+  background: var(--cream);
+  transition: transform 0.4s ease, opacity 0.3s ease;
+  transform-origin: center;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── MENU OVERLAY ── */
+#menu-overlay {
+  position: fixed; inset: 0;
+  background: var(--smoke);
+  z-index: 999;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+#menu-overlay.open { opacity: 1; pointer-events: all; }
+
+.menu-links { list-style: none; text-align: center; }
+.menu-links li { margin: 0.9rem 0; }
+.menu-links a {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  font-weight: 200; font-style: normal;
+  color: var(--cream);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  display: inline-block;
+  transition: color 0.3s;
+}
+.menu-links a:hover { color: var(--gold-light); }
+.menu-num {
+  font-family: var(--sans);
+  font-size: 0.52rem;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  display: block;
+  margin-bottom: 0.1rem;
+  font-weight: 200;
+}
+
+/* ── STICKY EMBLEM ── */
+#sticky-emblem {
+  position: fixed;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 500;
+  text-align: center;
+  pointer-events: none;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+#sticky-emblem.hidden {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.85);
+}
+.emblem-ring {
+  width: clamp(100px, 13vw, 155px);
+  height: clamp(100px, 13vw, 155px);
+  border-radius: 50%;
+  border: 1px solid rgba(154,123,79,0.32);
+  background: radial-gradient(ellipse at center, rgba(154,123,79,0.07) 0%, transparent 70%);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto; position: relative;
+}
+.emblem-ring::before {
+  content: '';
+  position: absolute; inset: 11px;
+  border-radius: 50%;
+  border: 1px solid rgba(154,123,79,0.14);
+}
+.emblem-glyph {
+  font-family: var(--serif-sc);
+  font-size: 2.4rem;
+  color: var(--gold);
+  font-weight: 300;
+  letter-spacing: 0.06em;
+}
+
+/* ── HERO ── */
+#hero {
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 2vh;
+  position: relative;
+  overflow: hidden;
+}
+#hero-text {
+  text-align: center;
+  z-index: 2;
+  pointer-events: none;
+  will-change: transform, opacity;
+  max-width: 680px;
+  padding: 0 2rem;
+}
+.hero-intro {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  line-height: 2;
+  color: rgba(242,237,228,0.38);
+  font-weight: 200;
+  letter-spacing: 0.08em;
+  max-width: 480px;
+  margin: 1.6rem auto 0;
+}
+.hero-label {
+  font-family: var(--sans);
+  font-size: 0.57rem; letter-spacing: 0.42em;
+  color: var(--gold); text-transform: uppercase;
+  font-weight: 200; display: block; margin-bottom: 1.2rem;
+}
+.hero-headline {
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  font-weight: 200; font-style: normal;
+  line-height: 1.12; color: var(--cream);
+  margin-bottom: 1.3rem; letter-spacing: 0.02em;
+}
+.hero-sub {
+  font-family: var(--sans);
+  font-size: 0.6rem; letter-spacing: 0.3em;
+  color: rgba(242,237,228,0.35);
+  text-transform: uppercase; font-weight: 200;
+}
+.scroll-cue {
+  width: 1px; height: 52px;
+  background: linear-gradient(to bottom, rgba(154,123,79,0.8), transparent);
+  margin: 2.5rem auto 0;
+  animation: scrollPulse 2.8s ease-in-out infinite;
+}
+@keyframes scrollPulse {
+  0%,100% { opacity: 0.2; transform: scaleY(0.7); }
+  50%      { opacity: 1;   transform: scaleY(1);   }
+}
+
+/* ══════════════════════════════════════════════
+   ORIGIN SECTION — full composition
+   Top: centered emblem spanning full width
+   Below: Left col text + maestro | Center bottle | Right agave carousel
+══════════════════════════════════════════════ */
+#origin {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  background: var(--ink);
+  overflow: hidden;
+}
+
+/* ── EMBLEM CAROUSEL ROW — spans both columns ── */
+.origin-emblem-row {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: clamp(4rem, 7vw, 7rem);
+  padding-bottom: 0;
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+}
+.emblem-track-wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  height: clamp(80px, 11vw, 130px);
+}
+.emblem-track {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.8rem, 4vw, 3.5rem);
+  transition: transform 0.55s cubic-bezier(0.77, 0, 0.18, 1);
+  will-change: transform;
+}
+.emblem-item {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transform: scale(0.6);
+  opacity: 0.35;
+  transition: transform 0.55s cubic-bezier(0.77, 0, 0.18, 1),
+              opacity 0.55s ease;
+}
+.emblem-item .section-emblem-ring { pointer-events: none; }
+.emblem-item.active { transform: scale(1); opacity: 1; }
+
+/* Left column */
+.origin-left {
+  padding: clamp(2rem,4vw,4rem) clamp(2rem,5vw,6rem) clamp(6rem,10vw,10rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  border-right: 1px solid rgba(154,123,79,0.1);
+  position: relative;
+  z-index: 2;
+}
+
+/* Right column */
+.origin-right {
+  padding: clamp(2rem,4vw,4rem) clamp(2rem,5vw,6rem) clamp(6rem,10vw,10rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: relative;
+  z-index: 2;
+}
+
+.section-label {
+  font-family: var(--sans);
+  font-size: 0.54rem; letter-spacing: 0.45em;
+  color: var(--gold); text-transform: uppercase;
+  font-weight: 200; display: block; margin-bottom: 2.5rem;
+}
+
+.origin-left h2 {
+  font-size: clamp(2.5rem, 4.5vw, 4rem);
+  font-weight: 300; font-style: normal;
+  line-height: 1.1; color: var(--cream);
+  margin-bottom: 1.8rem;
+}
+.origin-left p {
+  font-family: var(--sans);
+  font-size: 0.76rem; line-height: 1.95;
+  color: rgba(242,237,228,0.46);
+  font-weight: 200; letter-spacing: 0.03em;
+  max-width: 380px; margin-bottom: 1rem;
+}
+
+/* Maestro image slot */
+.maestro-slot {
+  margin-top: 2.5rem;
+  width: 50%;
+  aspect-ratio: 4/3;
+  background: var(--ash);
+  border: 1px solid rgba(154,123,79,0.1);
+  overflow: hidden;
+  position: relative;
+  border-radius: 8px;
+}
+.maestro-slot img {
+  width: 100%; height: 100%; object-fit: cover;
+  display: block;
+}
+/* placeholder state */
+.maestro-slot-placeholder {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 0.7rem;
+  background: linear-gradient(145deg, #1A1917, #2A2825);
+}
+.maestro-slot-placeholder span {
+  font-family: var(--sans);
+  font-size: 0.55rem; letter-spacing: 0.38em;
+  color: rgba(154,123,79,0.4); text-transform: uppercase;
+  font-weight: 200;
+}
+.maestro-slot-placeholder em {
+  font-family: var(--serif);
+  font-size: 1rem; font-style: normal;
+  color: rgba(154,123,79,0.3);
+}
+
+/* ── FLOATING BOTTLE ── */
+#bottle-float {
+  position: absolute;
+  left: 40%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  pointer-events: none;
+  animation: floatBottle 6s ease-in-out infinite;
+  /* sized to contain the tallest bottle slot */
+  width: clamp(100px, 13vw, 190px);
+  height: clamp(220px, 40vh, 400px);
+}
+@keyframes floatBottle {
+  0%,50% { margin-top: 0; }
+  25%      { margin-top: -10px; }
+}
+#bottle-float img {
+  width: clamp(350px, 13vw, 190px);
+  display: block;
+  filter: drop-shadow(0 40px 70px rgba(0,0,0,0.8));
+  transform: translate(var(--bx), var(--by));
+  transition: transform 0.1s linear;
+}
+
+/* bottle rotation frame slots — all stacked, only active shown instantly (no fade) */
+.bottle-img-slot {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: clamp(100px, 13vw, 190px);
+  opacity: 0;
+  transition: transform 0.1s linear; /* NO opacity transition — instant frame swap */
+  pointer-events: none;
+  filter: drop-shadow(0 40px 70px rgba(0,0,0,0.8));
+}
+.bottle-img-slot.active { opacity: 1; }
+.bottle-img-slot img { width: 100%; display: block; }
+/* placeholder version */
+.bottle-img-slot .bottle-ph {
+  width: 100%;
+}
+/* placeholder when no PNG yet */
+#bottle-float .bottle-ph {
+  width:  clamp(70px, 9vw, 130px);
+  height: clamp(220px, 40vh, 400px);
+  background: linear-gradient(170deg, rgba(154,123,79,0.18) 0%, rgba(154,123,79,0.04) 100%);
+  border: 1px solid rgba(154,123,79,0.25);
+  border-radius: 46px 46px 24px 24px;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  filter: drop-shadow(0 40px 60px rgba(0,0,0,0.7));
+  transform: translate(var(--bx), var(--by));
+  transition: transform 0.1s linear;
+}
+#bottle-float .bottle-ph::before {
+  content: '';
+  position: absolute; top: -12%;
+  left: 50%; transform: translateX(-50%);
+  width: 34%; height: 13%;
+  background: linear-gradient(to bottom, rgba(154,123,79,0.22), transparent);
+  border: 1px solid rgba(154,123,79,0.18);
+  border-bottom: none;
+  border-radius: 5px 5px 0 0;
+}
+.bottle-ph-txt {
+  font-family: var(--serif-sc);
+  font-size: 0.58rem; letter-spacing: 0.38em;
+  color: rgba(154,123,79,0.45);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+/* ── AGAVE VARIETY IMAGE ── */
+/* Shown immediately after the agave name, same proportions as maestro slot */
+.agave-img-slot {
+  width: auto;
+  
+  background: none;
+  border: 1px solid rgba(154,123,79,0.1);
+  position: relative;
+  margin-bottom: 1.8rem;
+  border-radius: 8px;
+  
+}
+.agave-img-slot img {
+  width: 300px;
+  display: block;
+
+}
+.agave-img-slot .agave-img-ph {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 0.7rem;
+  background: linear-gradient(145deg, #1A1917, #2A2825);
+}
+.agave-img-slot .agave-img-ph span {
+  font-family: var(--sans);
+  font-size: 0.55rem; letter-spacing: 0.38em;
+  color: rgba(154,123,79,0.4); text-transform: uppercase; font-weight: 200;
+}
+.agave-img-slot .agave-img-ph em {
+  font-family: var(--serif);
+  font-size: 0.9rem; font-style: normal;
+  color: rgba(154,123,79,0.3);
+}
+
+/* ── AGAVE CAROUSEL ── */
+.agave-carousel {
+  width: 100%;
+}
+.carousel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2.5rem;
+}
+.carousel-header .section-label { margin-bottom: 0; }
+
+.carousel-nav {
+  display: flex; gap: 0.6rem;
+}
+.carousel-btn {
+  background: none;
+  border: 1px solid rgba(154,123,79,0.28);
+  color: var(--gold);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.3s, border-color 0.3s, color 0.3s;
+}
+.carousel-btn:hover {
+  background: var(--gold);
+  color: var(--ink);
+  border-color: var(--gold);
+}
+
+/* slides wrapper */
+.carousel-track-wrap { overflow: hidden; width: 100%; }
+.carousel-track {
+  display: flex;
+  width: 100%;
+  transition: transform 0.55s cubic-bezier(0.77, 0, 0.18, 1);
+}
+.carousel-slide {
+  min-width: 100%;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+/* agave name */
+.agave-name {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 400; font-style: normal;
+  color: var(--cream);
+  letter-spacing: 0.02em;
+  margin-bottom: 0.4rem;
+  display: block;
+  word-break: break-word;
+}
+.agave-subtitle {
+  font-family: var(--sans);
+  font-size: 0.62rem; letter-spacing: 0.22em;
+  color: var(--gold); font-weight: 200;
+  display: block; margin-bottom: 2rem;
+}
+
+/* detail rows */
+.detail-block {
+  margin-bottom: 1.8rem;
+  padding-bottom: 1.8rem;
+  border-bottom: 1px solid rgba(154,123,79,0.08);
+}
+.detail-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.detail-label {
+  font-family: var(--sans);
+  font-size: 0.52rem; letter-spacing: 0.42em;
+  color: var(--gold); text-transform: uppercase;
+  font-weight: 300; display: block; margin-bottom: 0.38rem;
+}
+.detail-value {
+  font-family: var(--serif);
+  font-size: 1.1rem; font-weight: 400;
+  color: var(--cream); display: block; margin-bottom: 0.18rem;
+}
+.detail-desc {
+  font-family: var(--sans);
+  font-size: 0.65rem; color: rgba(242,237,228,0.32);
+  font-weight: 200; letter-spacing: 0.06em; line-height: 1.6;
+}
+
+/* dots */
+.carousel-dots {
+  display: flex; gap: 0.5rem;
+  margin-top: 2rem;
+}
+.dot {
+  width: 20px; height: 1px;
+  background: rgba(154,123,79,0.25);
+  cursor: pointer;
+  transition: background 0.3s, width 0.3s;
+}
+.dot.active {
+  background: var(--gold-light);
+  width: 36px;
+}
+
+/* ══════════════════════════════════════════════
+   CRAFT / EL PROCESO
+══════════════════════════════════════════════ */
+#craft {
+  background: var(--cream);
+  color: var(--ink);
+  padding: clamp(6rem,10vw,10rem) clamp(2rem,5vw,5rem);
+}
+.craft-intro {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  margin-bottom: clamp(5rem,7vw,7rem);
+  align-items: end;
+}
+.craft-intro h2 {
+  font-size: clamp(2.5rem,5vw,4.2rem);
+  font-weight: 300; font-style: normal;
+  line-height: 1.1; color: var(--ink);
+}
+.craft-intro .section-label { color: var(--gold); }
+.craft-intro-text {
+  font-family: var(--sans);
+  font-size: 0.75rem; line-height: 1.95;
+  color: rgba(14,13,11,0.5);
+  font-weight: 200; letter-spacing: 0.04em;
+}
+.craft-intro-text p + p { margin-top: 0.9rem; }
+
+.craft-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+}
+.craft-cell {
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  position: relative;
+  background: var(--ash);
+  border-radius: 8px;
+}
+.craft-cell-bg { width: 100%; height: 100%; }
+.craft-cell::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(14,13,11,0.65) 0%, transparent 50%);
+  z-index: 1;
+  transition: opacity 0.5s ease;
+}
+.craft-cell:hover::after { opacity: 0; }
+
+/* Hover text overlay */
+.craft-cell-hover {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  text-align: center;
+  background: rgba(14,13,11,0.88);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.craft-cell:hover .craft-cell-hover { opacity: 1; }
+.craft-cell:hover .craft-cell-bg { opacity: 0.18; transition: opacity 0.5s ease; }
+.craft-cell-bg { transition: opacity 0.5s ease; }
+.craft-cell-hover p {
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  line-height: 1.85;
+  color: rgba(242,237,228,0.65);
+  font-weight: 200;
+  letter-spacing: 0.06em;
+}
+.craft-cell-hover strong {
+  font-family: var(--serif);
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--cream);
+  display: block;
+  margin-bottom: 0.6rem;
+  letter-spacing: 0.04em;
+}
+.craft-cell-label {
+  position: absolute;
+  bottom: 1.4rem; left: 1.4rem; z-index: 2;
+}
+.craft-cell-label small {
+  font-family: var(--sans);
+  font-size: 0.5rem; letter-spacing: 0.32em;
+  color: var(--gold); text-transform: uppercase;
+  font-weight: 200; display: block; margin-bottom: 0.2rem;
+}
+.craft-cell-label em {
+  font-family: var(--serif);
+  font-size: 1rem; font-style: normal;
+  color: var(--cream); font-weight: 300;
+}
+
+/* ══════════════════════════════════════════════
+   STORY — text + image pairs
+══════════════════════════════════════════════ */
+#story {
+  background: var(--ink);
+  padding: clamp(6rem,10vw,10rem) clamp(2rem,5vw,5rem);
+}
+.story-label {
+  font-family: var(--sans);
+  font-size: 0.54rem; letter-spacing: 0.45em;
+  color: var(--gold); text-transform: uppercase;
+  font-weight: 200; display: block;
+  margin-bottom: 4rem;
+}
+.story-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+  margin-bottom: clamp(5rem,8vw,8rem);
+}
+.story-grid:last-child { margin-bottom: 0; }
+.story-grid.reverse { direction: rtl; }
+.story-grid.reverse > * { direction: ltr; }
+
+.story-img {
+  aspect-ratio: 4/5;
+  background: var(--ash);
+  overflow: hidden;
+  border-radius: 8px;
+}
+.story-img-bg { width: 100%; height: 100%; }
+/* .story-img img { width:100%;height:100%;object-fit:cover; } */
+
+.story-text h3 {
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 300; font-style: normal;
+  color: var(--cream); line-height: 1.15; margin-bottom: 1.5rem;
+}
+.story-text p {
+  font-family: var(--sans);
+  font-size: 0.75rem; line-height: 1.95;
+  color: rgba(242,237,228,0.45);
+  font-weight: 200; letter-spacing: 0.04em; margin-bottom: 0.9rem;
+}
+.story-detail-row {
+  display: flex; gap: 2rem;
+  margin-top: 2.5rem;
+  border-top: 1px solid rgba(154,123,79,0.12);
+  padding-top: 2rem;
+}
+.story-detail > small {
+  font-family: var(--sans);
+  font-size: 0.5rem; letter-spacing: 0.38em;
+  color: var(--gold); text-transform: uppercase;
+  font-weight: 300; display: block; margin-bottom: 0.3rem;
+}
+.story-detail > span {
+  font-family: var(--serif);
+  font-size: 1rem; color: var(--cream); font-weight: 400;
+}
+
+.deco-sep {
+  width: 1px; height: 70px;
+  background: linear-gradient(to bottom, transparent, rgba(154,123,79,0.3), transparent);
+  margin: 0 auto;
+}
+
+/* ══════════════════════════════════════════════
+   CONTACT
+══════════════════════════════════════════════ */
+#contact {
+  background: var(--smoke);
+  padding: clamp(6rem,10vw,9rem) clamp(2rem,5vw,5rem);
+}
+.contact-inner {
+  max-width: 620px; margin: 0 auto; text-align: center;
+}
+.contact-inner h2 {
+  font-size: clamp(2rem,4vw,3.2rem);
+  font-weight: 300; font-style: normal; color: var(--cream); margin-bottom: 0.8rem;
+}
+.contact-inner > p {
+  font-family: var(--sans);
+  font-size: 0.68rem; color: rgba(242,237,228,0.36);
+  letter-spacing: 0.14em; font-weight: 200;
+  margin-bottom: 3.5rem; line-height: 1.85;
+}
+.contact-form { display: flex; flex-direction: column; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 2.5rem; }
+.form-field {
+  border-bottom: 1px solid rgba(154,123,79,0.16);
+  margin-bottom: 1.8rem;
+}
+.form-field input,
+.form-field textarea,
+.form-field select {
+  background: transparent; border: none;
+  color: var(--cream); font-family: var(--sans);
+  font-size: 0.7rem; font-weight: 200;
+  letter-spacing: 0.14em;
+  padding: 0.75rem 0; outline: none; width: 100%; resize: none;
+  -webkit-appearance: none;
+}
+.form-field select { cursor: pointer; }
+.form-field select option { background: var(--smoke); color: var(--cream); }
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+  color: rgba(242,237,228,0.22);
+  text-transform: uppercase; letter-spacing: 0.24em; font-size: 0.58rem;
+}
+.form-field:focus-within { border-bottom-color: rgba(154,123,79,0.5); }
+.form-field textarea { min-height: 90px; }
+.btn-send {
+  margin-top: 0.5rem;
+  background: transparent;
+  border: 1px solid rgba(154,123,79,0.28);
+  color: var(--gold-light);
+  font-family: var(--sans);
+  font-size: 0.57rem; letter-spacing: 0.44em;
+  text-transform: uppercase; font-weight: 200;
+  padding: 1.1rem 3.5rem; cursor: pointer;
+  transition: all 0.4s ease; align-self: center;
+}
+.btn-send:hover { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+
+/* ══════════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════════ */
+footer {
+  background: var(--ink);
+  border-top: 1px solid rgba(154,123,79,0.08);
+  padding: 3.5rem clamp(2rem,5vw,5rem) 2.5rem;
+}
+.footer-top {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start; gap: 3rem;
+  margin-bottom: 3rem; padding-bottom: 3rem;
+  border-bottom: 1px solid rgba(154,123,79,0.06);
+}
+.footer-brand-col { text-align: center; }
+.footer-wordmark {
+  font-family: var(--serif-sc);
+  font-size: 1.4rem; letter-spacing: 0.52em;
+  color: var(--gold); font-weight: 300; display: block; margin-bottom: 0.6rem;
+}
+.footer-tagline {
+  font-family: var(--sans);
+  font-size: 0.52rem; letter-spacing: 0.28em;
+  color: rgba(242,237,228,0.2); font-weight: 200; text-transform: uppercase;
+}
+.footer-col h4 {
+  font-family: var(--sans);
+  font-size: 0.52rem; letter-spacing: 0.38em;
+  color: var(--gold); text-transform: uppercase;
+  font-weight: 300; margin-bottom: 1rem;
+}
+.footer-col p, .footer-col a {
+  font-family: var(--sans);
+  font-size: 0.64rem; color: rgba(242,237,228,0.28);
+  font-weight: 200; letter-spacing: 0.08em;
+  line-height: 1.9; text-decoration: none; display: block;
+  transition: color 0.3s;
+}
+.footer-col a:hover { color: var(--gold-light); }
+.footer-col-right { text-align: right; }
+.footer-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-bottom p, .footer-bottom a {
+  font-family: var(--sans); font-size: 0.52rem;
+  color: rgba(242,237,228,0.18); font-weight: 200;
+  letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none;
+}
+.footer-bottom a:hover { color: rgba(242,237,228,0.5); }
+.footer-legal { display: flex; gap: 2rem; }
+
+/* ══════════════════════════════════════════════
+   REVEAL SECTION — full screen, between story & contact
+══════════════════════════════════════════════ */
+#reveal {
+  height: 90vh;
+  position: relative;
+  overflow: hidden;
+  cursor: crosshair;
+  padding: 15px;
+  background: var(--ink);
+  outline: 40px solid var(--ink);
+}
+/* push the background layers inside the 15px frame */
+.bg-hidden,
+.bg-mask {
+  inset: 40px;
+}
+
+/* LAYER 1 · bottom · shown through the lens */
+.bg-hidden {
+  position: absolute; inset: 40;
+  background-size: cover;
+  background-position: center;
+  z-index: 1;
+  /* ↓ Replace with your secondary/reveal image */
+  background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1800&q=80');
+}
+
+/* LAYER 2 · primary bg · has the mask hole */
+.bg-mask {
+  position: absolute; inset: 40;
+  background-size: cover;
+  background-position: center;
+  z-index: 2;
+  /* ↓ Replace with your primary dark background image */
+  background-image: url('https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1800&q=80');
+  /* parked off-screen until mouse enters */
+  -webkit-mask-image: radial-gradient(circle 100px at -500px -500px, transparent 99%, black 100%);
+          mask-image: radial-gradient(circle 100px at -500px -500px, transparent 99%, black 100%);
+  will-change: mask-image;
+}
+
+.reveal-caption {
+  position: absolute;
+  bottom: clamp(2.5rem, 6vh, 5rem);
+  left: clamp(2rem, 5vw, 5rem);
+  z-index: 4; pointer-events: none;
+}
+.reveal-caption .hint {
+  font-family: var(--sans);
+  font-size: 0.54rem; letter-spacing: 0.38em;
+  color: rgba(242,237,228,0.4); text-transform: uppercase;
+  font-weight: 200; display: block; margin-bottom: 0.6rem;
+}
+.reveal-caption h2 {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 300; font-style: normal;
+  line-height: 1; color: var(--cream);
+  text-shadow: 0 2px 60px rgba(0,0,0,0.6);
+}
+
+/* Centered sentence overlay in the reveal section */
+.reveal-sentence {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  pointer-events: none;
+  text-align: center;
+  width: min(680px, 80vw);
+}
+.reveal-sentence p {
+  font-family: var(--serif);
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  font-weight: 300;
+  font-style: normal;
+  line-height: 1.7;
+  color: rgba(242,237,228,0.82);
+  letter-spacing: 0.04em;
+  text-shadow: 0 2px 40px rgba(0,0,0,0.7);
+}
+
+/* ── SECTION EMBLEM ── */
+.section-emblem {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4rem;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.section-emblem.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+.section-emblem-ring {
+  width: clamp(80px, 7vw, 120px);
+  height: clamp(80px, 7vw, 120px);
+  border-radius: 50%;
+  border: none;
+  background: none;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.section-emblem-ring::before {
+  content: '';
+  position: absolute; inset: 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(154,123,79,0.12);
+}
+.section-emblem-ring img,
+.section-emblem-ring svg {
+  width: 100%; height: 100%; object-fit: contain;
+}
+/* glyph fallback */
+.section-emblem-glyph {
+  font-family: var(--serif-sc);
+  font-size: 1.1rem;
+  color: var(--gold);
+  font-weight: 300;
+  letter-spacing: 0.04em;
+}
+
+/* ── PREV / NEXT BUTTONS — fixed to screen edges, visible only over #origin ── */
+.carousel-edge-btn {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(14,13,11,0.55);
+  border: 1px solid rgba(154,123,79,0.45);
+  color: var(--gold-light);
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.4rem; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.3s, border-color 0.3s, color 0.3s, opacity 0.4s;
+  z-index: 800;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+}
+.carousel-edge-btn.carousel-visible {
+  opacity: 1;
+  pointer-events: all;
+}
+.carousel-edge-btn:hover {
+  background: var(--gold);
+  color: var(--ink);
+  border-color: var(--gold);
+}
+#prevBtn { left: 1.4rem; }
+#nextBtn { right: 1.4rem; }
+
+/* ── POETIC SECTION ── */
+#poetic {
+  background: var(--ink);
+  padding: clamp(6rem,10vw,10rem) clamp(2rem,5vw,5rem);
+  text-align: center;
+}
+.poetic-inner {
+  max-width: 640px;
+  margin: 0 auto;
+}
+.poetic-label {
+  font-family: var(--sans);
+  font-size: 0.54rem; letter-spacing: 0.45em;
+  color: var(--gold); text-transform: uppercase;
+  font-weight: 200; display: block;
+  margin-bottom: 3rem;
+}
+.poetic-text {
+  font-family: var(--serif);
+  font-size: clamp(1.15rem, 2.2vw, 1.55rem);
+  font-weight: 300;
+  font-style: normal;
+  line-height: 1.85;
+  color: rgba(242,237,228,0.72);
+  letter-spacing: 0.02em;
+}
+.fade-in {
+  opacity: 0; transform: translateY(26px);
+  transition: opacity 0.95s ease, transform 0.95s ease;
+}
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+/* ── SECTION ILLUSTRATION ── */
+.section-illustration {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3.5rem;
+}
+.section-illustration-frame {
+  width: clamp(70px, 9vw, 110px);
+  height: clamp(70px, 9vw, 110px);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.section-illustration-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+/* placeholder shown when no image is provided */
+.section-illustration-frame .illus-ph {
+  width: 100%;
+  height: 100%;
+  border: 1px dashed rgba(154,123,79,0.28);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: rgba(154,123,79,0.03);
+}
+.section-illustration-frame .illus-ph span {
+  font-family: var(--sans);
+  font-size: 0.45rem;
+  letter-spacing: 0.32em;
+  color: rgba(154,123,79,0.35);
+  text-transform: uppercase;
+  text-align: center;
+  padding: 0 0.5rem;
+}
+
+/* ── COLOPHON (closing section — light bg, dark text) ── */
+#colophon {
+  background: var(--cream);
+  padding: clamp(7rem,11vw,11rem) clamp(2rem,5vw,5rem);
+  border-top: 1px solid rgba(154,123,79,0.15);
+  text-align: center;
+}
+.colophon-inner {
+  max-width: 640px;
+  margin: 0 auto;
+}
+.colophon-text .section-label {
+  margin-bottom: 2rem;
+  display: block;
+  color: var(--gold);
+}
+.colophon-text h2 {
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 300; font-style: normal;
+  color: var(--ink);
+  line-height: 1.15;
+  margin-bottom: 2rem;
+}
+.colophon-text p {
+  font-family: var(--sans);
+  font-size: 0.76rem;
+  line-height: 2;
+  color: rgba(14,13,11,0.55);
+  font-weight: 200;
+  letter-spacing: 0.03em;
+  margin-bottom: 1rem;
+}
+.colophon-text p + p { margin-top: 0.6rem; }
+/* Colophon illustration placeholder adapts to light bg */
+#colophon .illus-ph {
+  border-color: rgba(154,123,79,0.35);
+  background: rgba(154,123,79,0.05);
+}
+#colophon .illus-ph span {
+  color: rgba(154,123,79,0.5);
+}
+
+/* ── MAESTRO SWAP ── */
+/* Each maestro slot is hidden by default; JS activates the matching one */
+.maestro-slot-agave {
+  display: none;
+  width: 100%;
+  aspect-ratio: 4/5;
+  background: var(--ash);
+  border: 1px solid rgba(154,123,79,0.1);
+  overflow: hidden;
+  position: relative;
+  border-radius: 8px;
+}
+.maestro-slot-agave.active {
+  display: block;
+}
+
+/* ── PARALLAX FLOAT WRAPPERS — freely floating, outside columns ── */
+
+/* Maestro position: floats behind/below the bottle, anchored absolutely to #origin */
+.parallax-maestro-wrap {
+  position: absolute;
+  /* sits just right of center, overlapping bottle area downward */
+  left: 30%;
+  top: 30%;
+  width: clamp(120px, 20vw, 180px);
+  will-change: transform;
+  transition: transform 0.18s linear;
+  z-index: 5;
+  pointer-events: none;
+}
+.parallax-maestro-wrap .maestro-slot-agave {
+  margin-top: 0;
+  width: 100%;
+}
+
+/* Agave: floats to the right, beyond the right column content */
+.parallax-agave-img-wrap { display: none !important; }
+  position: absolute;
+    left: 75%;
+  top: 65%;
+  width: clamp(160px, 17vw, 240px);
+  will-change: transform;
+  transition: transform 0.18s linear;
+  z-index: 5;
+  pointer-events: none;
+}
+.parallax-agave-img-wrap .agave-img-slot {
+  margin-bottom: 0;
+  width: 100%;
+}
+.maestro-slot-agave img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.maestro-slot-agave .maestro-slot-placeholder {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 0.7rem;
+  background: linear-gradient(145deg, #1A1917, #2A2825);
+}
+.maestro-slot-agave .maestro-slot-placeholder span {
+  font-family: var(--sans);
+  font-size: 0.55rem; letter-spacing: 0.38em;
+  color: rgba(154,123,79,0.4); text-transform: uppercase; font-weight: 200;
+}
+.maestro-slot-agave .maestro-slot-placeholder em {
+  font-family: var(--serif);
+  font-size: 1rem; font-style: normal;
+  color: rgba(154,123,79,0.3);
+}
+
+/* ── MOOD CAROUSEL ── */
+#mood-carousel-section .mood-img {
+  height: clamp(120px, 18vw, 200px);
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  opacity: 0.72;
+  transition: opacity 0.4s ease;
+}
+#mood-carousel-section .mood-img:hover { opacity: 1; }
+#mood-carousel-section .mood-img img {
+  height: 100%;
+  width: auto;
+  display: block;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+/* Placeholder tile used when no image is supplied */
+#mood-carousel-section .mood-img-ph {
+  height: clamp(120px, 18vw, 200px);
+  width: clamp(90px, 14vw, 160px);
+  background: linear-gradient(145deg, #1A1917, #2A2825);
+  border: 1px solid rgba(154,123,79,0.1);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+#mood-carousel-section .mood-img-ph span {
+  font-family: var(--sans);
+  font-size: 0.44rem; letter-spacing: 0.32em;
+  color: rgba(154,123,79,0.3); text-transform: uppercase; font-weight: 200;
+}
+
+
+.origin-left-maestro-mobile {
+  display: none; /* hidden on desktop */
+  margin-top: 2.5rem;
+}
+.origin-left-maestro-mobile .maestro-slot-agave {
+  width: 60%;
+  max-width: 220px;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  #origin { grid-template-columns: 1fr; grid-template-rows: auto auto auto; }
+  .origin-emblem-row { padding-top: 3rem; }
+  .origin-left { border-right: none; border-bottom: 1px solid rgba(154,123,79,0.1); padding-bottom: 3rem; }
+  .origin-left-maestro-mobile { display: block; }
+  #bottle-float { display: none; }
+  .craft-intro { grid-template-columns: 1fr; gap: 2rem; }
+  .craft-grid { grid-template-columns: 1fr 1fr; }
+  .story-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .story-grid.reverse { direction: ltr; }
+  .footer-top { grid-template-columns: 1fr; text-align: center; }
+  .footer-col-right { text-align: center; }
+  .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+  .footer-legal { justify-content: center; }
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+  nav { padding: 1.4rem 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- FIXED CAROUSEL BUTTONS — shown only while #origin is in view -->
+<button class="carousel-edge-btn" id="prevBtn" aria-label="Anterior">&#8592;</button>
+<button class="carousel-edge-btn" id="nextBtn" aria-label="Siguiente">&#8594;</button>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">
+  <img src="images/NDM_logo_w.svg" alt="NdM" style="height:80px;display:block;">
+</a>
+  <button class="hamburger" id="menuBtn" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MENU OVERLAY -->
+<div id="menu-overlay">
+  <ul class="menu-links">
+    <li><a href="#hero"    class="nav-link"><span class="menu-num">01</span>Origen</a></li>
+    <li><a href="#origin"  class="nav-link"><span class="menu-num">02</span>El Maguey</a></li>
+    <li><a href="#craft"   class="nav-link"><span class="menu-num">03</span>El Proceso</a></li>
+    <li><a href="#story"   class="nav-link"><span class="menu-num">04</span>La Historia</a></li>
+    <li><a href="#reveal"   class="nav-link"><span class="menu-num">05</span>El Espíritu</a></li>
+    <li><a href="#colophon" class="nav-link"><span class="menu-num">06</span>Colofón</a></li>
+    <li><a href="#contact"  class="nav-link"><span class="menu-num">07</span>Contacto</a></li>
+  </ul>
+</div>
+
+<!-- STICKY EMBLEM -->
+<div id="sticky-emblem">
+  <!-- swap for: <img src="emblem.png" style="width:100%;border-radius:50%;"> -->
+  <div class="emblem-ring">
+  <img src="images/moon.png" alt="NdM" style="width:100%;height:100%;object-fit:contain;border-radius:50%;">
+</div>
+</div>
+
+<!-- ══════════════════════════════════
+     01  HERO
+════════════════════════════════════ -->
+<section id="hero">
+  <div id="hero-text">
+    <span class="hero-label">Mezcal Artesanal &mdash; Oaxaca, México</span>
+    <h1 class="hero-headline">
+      NOCHE<br>
+      de MUERTOS
+    </h1>
+    <span class="hero-sub">La tierra se prende &nbsp;·&nbsp; el Agua quemada &nbsp;·&nbsp; [MMXXI]</span>
+    <p class="hero-intro">[Párrafo de presentación — unas líneas que sitúen al visitante: quiénes son, de dónde viene el mezcal, qué los mueve a hacerlo. Breve, honesto, sin adornos.]</p>
+    <div class="scroll-cue"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     02  EL MAGUEY
+     Left: text + maestro slot
+     Center: floating bottle
+     Right: agave carousel
+════════════════════════════════════ -->
+<section id="origin">
+
+  <!-- ── Emblem carousel — full-width row, center item = active agave ── -->
+  <div class="origin-emblem-row fade-in">
+    <div class="emblem-track-wrap">
+      <div class="emblem-track" id="emblemTrack">
+  <div class="emblem-item active" data-index="0">
+    <div class="section-emblem-ring">
+      <img src="images/emblem-tobala.png" alt="Tobalá">
+    </div>
+  </div>
+  <div class="emblem-item" data-index="1">
+    <div class="section-emblem-ring">
+      <img src="images/emblem-espadin.png" alt="Espadín">
+    </div>
+  </div>
+  <div class="emblem-item" data-index="2">
+    <div class="section-emblem-ring">
+      <img src="images/emblem-tepeztate.png" alt="Tepextate">
+    </div>
+  </div>
+  <div class="emblem-item" data-index="3">
+    <div class="section-emblem-ring">
+      <img src="images/emblem-madrecuixe.png" alt="Madrecuixe">
+    </div>
+  </div>
+  <div class="emblem-item" data-index="4">
+    <div class="section-emblem-ring">
+      <img src="images/emblem-chuparosas.png" alt="Chuparosas">
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+
+  <!-- ── Floating bottle (absolutely centered, above both columns) ── -->
+  <div id="bottle-float">
+    <!--
+      BOTTLE ROTATION FRAMES
+      ─────────────────────────────────────────────────────────────────
+      The bottle no longer changes with the agave carousel.
+      Instead it rotates in response to horizontal mouse position.
+
+      To configure: edit BOTTLE_FRAMES in the <script> at the bottom.
+      Add or remove filenames there — the HTML below is generated
+      automatically by JS on page load. You don't need to touch this block.
+      ─────────────────────────────────────────────────────────────────
+    -->
+  </div>
+
+  <!-- LEFT COLUMN -->
+  <div class="origin-left fade-in">
+
+    <span class="section-label">02 &mdash; El Maguey</span>
+    <h2>Tierra<br>que<br><em>recuerda</em></h2>
+    <p>[Párrafo principal — el origen de la marca, el agave, la región. Terroir, familia, tradición generacional.]</p>
+    <p>[Segundo párrafo — la relación con el tiempo, el fuego, la muerte como parte del ciclo natural.]</p>
+
+    <!--
+      MAESTRO PHOTOS — one per agave variety (data-agave = carousel index 0–4)
+      Replace each placeholder with the corresponding photo.
+    -->
+
+    <!-- MOBILE ONLY: maestro image shown here, between text and agave carousel -->
+    <div class="origin-left-maestro-mobile">
+      <div class="maestro-slot-agave active" data-agave-mobile="0">
+        <img src="images/maestro-tobala.png" alt="Maestro — Tobalá">
+      </div>
+      <div class="maestro-slot-agave" data-agave-mobile="1">
+        <img src="images/maestro-espadin.png" alt="Maestro — Espadín">
+      </div>
+      <div class="maestro-slot-agave" data-agave-mobile="2">
+        <img src="images/maestro-tepeztate.png" alt="Maestro — Tepextate">
+      </div>
+      <div class="maestro-slot-agave" data-agave-mobile="3">
+        <img src="images/maestro-madrecuixe.png" alt="Maestro — Madrecuixe">
+      </div>
+      <div class="maestro-slot-agave" data-agave-mobile="4">
+        <img src="images/maestro-chuparosas.png" alt="Maestro — Chuparosas">
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FLOATING MAESTRO IMAGE — freely positioned behind bottle -->
+  <div class="parallax-maestro-wrap" id="maestroParallax">
+      <div class="maestro-slot-agave active" data-agave="0">
+        <!-- REPLACE ↓ with <img src="maestro-tobala.jpg" alt="Maestro — Tobalá"> -->
+        <img src="images/maestro-tobala.png" alt="Maestro — Tobalá">
+      </div>
+      <div class="maestro-slot-agave" data-agave="1">
+        <!-- REPLACE ↓ with <img src="maestro-espadin.jpg" alt="Maestro — Espadín"> -->
+        <img src="images/maestro-espadin.png" alt="Maestro — espadin">
+      </div>
+      <div class="maestro-slot-agave" data-agave="2">
+        <!-- REPLACE ↓ with <img src="maestro-tepextate.jpg" alt="Maestro — Tepextate"> -->
+        <img src="images/maestro-tepeztate.png" alt="Maestro — tepeztate">
+      </div>
+      <div class="maestro-slot-agave" data-agave="3">
+        <!-- REPLACE ↓ with <img src="maestro-cuishe.jpg" alt="Maestro — Cuishe"> -->
+        <img src="images/maestro-madrecuixe.png" alt="Maestro — madrecuixe">
+      </div>
+      <div class="maestro-slot-agave" data-agave="4">
+        <!-- REPLACE ↓ with <img src="maestro-5.jpg" alt="Maestro — [Agave 5]"> -->
+        <img src="images/maestro-chuparosas.png" alt="Maestro — chuparosas">
+      </div>
+    </div><!-- /maestroParallax -->
+
+  <!-- RIGHT COLUMN — agave carousel -->
+  <div class="origin-right fade-in" style="transition-delay:0.12s">
+    <div class="agave-carousel">
+
+      <div class="carousel-header">
+        <span class="section-label" style="margin-bottom:0">Los agaves</span>
+      </div>
+
+      <div class="carousel-track-wrap">
+        <div class="carousel-track" id="carouselTrack">
+
+          <!-- SLIDE 1 -->
+          <div class="carousel-slide">
+            <span class="agave-name">Tobalá</span>
+            <span class="agave-subtitle">Agave potatorum · Silvestre</span>
+            <div class="detail-block">
+              <span class="detail-label">Maduración</span>
+              <span class="detail-value">[## años]</span>
+              <span class="detail-desc">[Descripción de la maduración del Tobalá en su hábitat natural]</span>
+            </div>
+            <div class="detail-block">
+              <span class="detail-label">Región</span>
+              <span class="detail-value">[Sierra Sur, Oaxaca]</span>
+              <span class="detail-desc">[Municipio, altitud, microclima]</span>
+            </div>
+            <div class="detail-block">
+              <span class="detail-label">Perfil sensorial</span>
+              <span class="detail-value">[Floral · Mineral · Frutal]</span>
+              <span class="detail-desc">[Notas de cata: lo que se percibe en nariz y paladar]</span>
+            </div>
+            <div class="detail-block">
+              <span class="detail-label">Graduación</span>
+              <span class="detail-value">[##° GL]</span>
+              <span class="detail-desc">[Sin ajuste de agua · destilación en olla de barro]</span>
+            </div>
+          </div>
+
+          <!-- SLIDE 2 -->
+          <div class="carousel-slide">
+            <span class="agave-name">Espadín</span>
+            <span class="agave-subtitle">Agave angustifolia · Cultivado</span>
+            <div class="detail-block">
+              <span class="detail-label">Maduración</span>
+              <span class="detail-value">[## años]</span>
+              <span class="detail-desc">[Descripción de la maduración del Espadín cultivado]</span>
+            </div>
+            <div class="detail-block">
+              <span class="detail-label">Región</span>
+              <span class="detail-value">[Valles Centrales, Oaxaca]</span>
+              <span class="detail-desc">[Municipio, altitud, microclima]</span>
+            </div>
+            <div class="detail-block">
+              <span class="detail-label">Perfil sensorial</span>
+              <span class="detail-value">[Ahumado · Herbal · Dulce]</span>
+              <span class="detail-desc">[Notas de cata: lo que se percibe en nariz y paladar]</span>
+            </div>
+            <div class="detail-block">
+              <span class="detail-label">Graduación</span>
+              <span class="detail-value">[##° GL]</span>
+              <span class="detail-desc">[Sin ajuste de agua · doble destilación]</span>
+            </div>
+          </div>
+
+          <!-- SLIDE 3 -->
+          <div class="carousel-slide">
+            <span class="agave-name">Tepextate</span>
+            <span class="agave-subtitle">Agave marmorata · Silvestre</span>
+            <div class="detail-block">
+              <span class="detail-label">Maduración</span>
+              <span class="detail-value">[## años]</span>
+              <span class="detail-desc">[El Tepextate es uno de los agaves de maduración más lenta]</span>
+            </div>
+            <div class="detail-block">
+              <span class="detail-label">Región</span>
+              <span class="detail-value">[Cañada, Oaxaca]</span>
+              <span class="detail-desc">[Municipio, altitud, microclima]</span>
+            </div>
+            <div class="detail-block">
+              <span class="detail-label">Perfil sensorial</span>
+              <span class="detail-value">[Terroso · Especiado · Complejo]</span>
+              <span class="detail-desc">[Notas de cata: lo que se percibe en nariz y paladar]</span>
+            </div>
+            <div class="detail-block">
+              <span class="detail-label">Graduación</span>
+              <span class="detail-value">[##° GL]</span>
+              <span class="detail-desc">[Sin ajuste · fermentación en tinas de mezquite]</span>
+            </div>
+          </div>
+
+          <!-- SLIDE 4 -->
+          <div class="carousel-slide">
+            <span class="agave-name">Cuishe</span>
+            <span class="agave-subtitle">Agave karwinskii · Silvestre</span>
+            <div class="detail-block">
+              <span class="detail-label">Maduración</span>
+              <span class="detail-value">[## años]</span>
+              <span class="detail-desc">[Descripción de la maduración del Cuishe en cañadas y laderas]</span>
+            </div>
+            <div class="detail-block">
+              <span class="detail-label">Región</span>
+              <span class="detail-value">[Cañada Oaxaqueña]</span>
+              <span class="detail-desc">[Municipio, altitud, microclima]</span>
+            </div>
+            <div class="detail-block">
+              <span class="detail-label">Perfil sensorial</span>
+              <span class="detail-value">[Cítrico · Vegetal · Largo]</span>
+              <span class="detail-desc">[Notas de cata: lo que se percibe en nariz y paladar]</span>
+            </div>
+            <div class="detail-block">
+              <span class="detail-label">Graduación</span>
+              <span class="detail-value">[##° GL]</span>
+              <span class="detail-desc">[Sin ajuste · destilación tradicional]</span>
+            </div>
+          </div>
+
+          <!-- SLIDE 5 -->
+          <div class="carousel-slide">
+            <span class="agave-name">[Agave 5]</span>
+            <span class="agave-subtitle">[Especie · Tipo]</span>
+            <div class="detail-block">
+              <span class="detail-label">Maduración</span>
+              <span class="detail-value">[## años]</span>
+              <span class="detail-desc">[Descripción de la maduración]</span>
+            </div>
+            <div class="detail-block">
+              <span class="detail-label">Región</span>
+              <span class="detail-value">[Región, Oaxaca]</span>
+              <span class="detail-desc">[Municipio, altitud, microclima]</span>
+            </div>
+            <div class="detail-block">
+              <span class="detail-label">Perfil sensorial</span>
+              <span class="detail-value">[Nota · Nota · Nota]</span>
+              <span class="detail-desc">[Notas de cata]</span>
+            </div>
+            <div class="detail-block">
+              <span class="detail-label">Graduación</span>
+              <span class="detail-value">[##° GL]</span>
+              <span class="detail-desc">[Proceso de destilación]</span>
+            </div>
+          </div>
+
+        </div><!-- /track -->
+      </div><!-- /track-wrap -->
+
+      <!-- dots -->
+      <div class="carousel-dots" id="carouselDots">
+        <div class="dot active" data-index="0"></div>
+        <div class="dot"        data-index="1"></div>
+        <div class="dot"        data-index="2"></div>
+        <div class="dot"        data-index="3"></div>
+        <div class="dot"        data-index="4"></div>
+      </div>
+
+    </div><!-- /agave-carousel -->
+  </div><!-- /origin-right -->
+
+  <!-- FLOATING AGAVE IMAGES — freely positioned, one visible at a time (synced to carousel) -->
+  <div class="parallax-agave-img-wrap agave-img-parallax" data-agave-float="0" style="display:block;">
+    <div class="agave-img-slot">
+      <img src="images/agave-tobala.png" alt="Tobalá">
+    </div>
+  </div>
+  <div class="parallax-agave-img-wrap agave-img-parallax" data-agave-float="1" style="display:none;">
+    <div class="agave-img-slot">
+      <img src="images/agave-espadin.png" alt="Espadín">
+    </div>
+  </div>
+  <div class="parallax-agave-img-wrap agave-img-parallax" data-agave-float="2" style="display:none;">
+    <div class="agave-img-slot">
+      <img src="images/agave-tobala.png" alt="Tepextate">
+    </div>
+  </div>
+  <div class="parallax-agave-img-wrap agave-img-parallax" data-agave-float="3" style="display:none;">
+    <div class="agave-img-slot">
+      <div class="agave-img-ph"><em>Agave karwinskii</em><span>Cuishe</span></div>
+    </div>
+  </div>
+  <div class="parallax-agave-img-wrap agave-img-parallax" data-agave-float="4" style="display:none;">
+    <div class="agave-img-slot">
+      <div class="agave-img-ph"><em>[Nombre científico]</em><span>[Agave 5]</span></div>
+    </div>
+  </div>
+
+
+</section>
+
+<!-- ══════════════════════════════════
+     03  EL PROCESO
+════════════════════════════════════ -->
+<section id="craft">
+  <!--
+    SECTION ILLUSTRATION — 03 El Proceso
+    Replace placeholder with: <img src="illustrations/03-proceso.png" alt="">
+  -->
+  <div class="section-illustration fade-in">
+    <div class="section-illustration-frame">
+      <!-- REPLACE ↓ with <img src="illustrations/03-proceso.png" alt=""> -->
+      <div class="illus-ph"><span>Ilustración<br>03 — Proceso</span></div>
+    </div>
+  </div>
+
+  <div class="craft-intro fade-in">
+    <div>
+      <span class="section-label" style="color:var(--gold)">03 &mdash; El Proceso</span>
+      <h2>Sin<br>atajos,<br><em>sin prisa</em></h2>
+    </div>
+    <div class="craft-intro-text">
+      <p>[Texto introductorio sobre el proceso de elaboración — el tiempo, el fuego, las manos. La paciencia como filosofía de producción.]</p>
+      <p>[Segundo párrafo. Talla, cocción en horno de tierra, fermentación abierta en tinas de madera, destilación en ollas de barro.]</p>
+    </div>
+  </div>
+
+  <div class="craft-grid fade-in">
+    <div class="craft-cell">
+      <!-- <img src="talla.jpg" alt="La talla"> -->
+      <div class="craft-cell-bg" style="background:linear-gradient(135deg,#1A1917,#2A2825);"></div>
+      <div class="craft-cell-label"><small>01</small><em>La talla</em></div>
+      <div class="craft-cell-hover">
+        <strong>La talla</strong>
+        <p>[El corte del maguey maduro — cómo se identifica el momento exacto, el trabajo con la coa, el respeto al ciclo.]</p>
+      </div>
+    </div>
+    <div class="craft-cell">
+      <!-- <img src="horno.jpg" alt="El horno"> -->
+      <div class="craft-cell-bg" style="background:linear-gradient(135deg,#0E0D0B,#1A1917);"></div>
+      <div class="craft-cell-label"><small>02</small><em>El horno</em></div>
+      <div class="craft-cell-hover">
+        <strong>El horno</strong>
+        <p>[Cocción en horno cónico de tierra — días bajo la tierra, el humo de mezquite o encino que impregna las piñas.]</p>
+      </div>
+    </div>
+    <div class="craft-cell">
+      <!-- <img src="fermentacion.jpg" alt="La fermentación"> -->
+      <div class="craft-cell-bg" style="background:linear-gradient(135deg,#2A2825,#0E0D0B);"></div>
+      <div class="craft-cell-label"><small>03</small><em>La fermentación</em></div>
+      <div class="craft-cell-hover">
+        <strong>La fermentación</strong>
+        <p>[Fermentación abierta en tinas de madera — levaduras silvestres, tiempo libre, el aire del lugar como ingrediente.]</p>
+      </div>
+    </div>
+    <div class="craft-cell">
+      <!-- <img src="destilacion.jpg" alt="La destilación"> -->
+      <div class="craft-cell-bg" style="background:linear-gradient(135deg,#0E0D0B,#2A2825);"></div>
+      <div class="craft-cell-label"><small>04</small><em>La destilación</em></div>
+      <div class="craft-cell-hover">
+        <strong>La destilación</strong>
+        <p>[Doble destilación en olla de barro o cobre — el punto exacto, sin ajustes de agua, la graduación natural del espíritu.]</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     04  LA HISTORIA — text + image
+════════════════════════════════════ -->
+<section id="story">
+  <!--
+    SECTION ILLUSTRATION — 04 La Historia
+    Replace placeholder with: <img src="illustrations/04-historia.png" alt="">
+  -->
+  <div class="section-illustration fade-in" style="margin-bottom:2rem;">
+    <div class="section-illustration-frame">
+      <!-- REPLACE ↓ with <img src="illustrations/04-historia.png" alt=""> -->
+      <div class="illus-ph"><span>Ilustración<br>04 — Historia</span></div>
+    </div>
+  </div>
+
+  <span class="story-label">04 &mdash; La Historia</span>
+
+  <div class="story-grid fade-in" style="padding:0 clamp(2rem,5vw,5rem);">
+    <div class="story-img">
+      <!-- <img src="story-1.jpg" alt="El maestro"> -->
+      <div class="story-img-bg" style="background:linear-gradient(140deg,#1A1917,#2A2825);"></div>
+    </div>
+    <div class="story-text">
+      <h3>El maestro<br><em>y su silencio</em></h3>
+      <p>[Párrafo sobre el maestro mezcalero — la tradición familiar o comunitaria, generaciones produciendo mezcal.]</p>
+      <p>[Segundo párrafo — la relación con el agave, la tierra, el ciclo. Personal o filosófico.]</p>
+      <div class="story-detail-row">
+        <div class="story-detail"><small>Producción</small><span>[## L/año]</span></div>
+        <div class="story-detail"><small>Generaciones</small><span>[##]</span></div>
+        <div class="story-detail"><small>Comunidad</small><span>[Nombre]</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="deco-sep" style="margin:5rem auto;"></div>
+
+  <div class="story-grid reverse fade-in" style="padding:0 clamp(2rem,5vw,5rem);">
+    <div class="story-img">
+      <!-- <img src="story-2.jpg" alt="El horno"> -->
+      <div class="story-img-bg" style="background:linear-gradient(140deg,#2A2825,#0E0D0B);"></div>
+    </div>
+    <div class="story-text">
+      <h3>El fuego<br><em>que transforma</em></h3>
+      <p>[La cocción — el horno de tierra, el fuego de mezquite o encino, los días de espera. La magia bajo la tierra.]</p>
+      <p>[Más poético — el humo como memoria, el calor como rito, el tiempo como ingrediente esencial.]</p>
+      <div class="story-detail-row">
+        <div class="story-detail"><small>Combustible</small><span>[Madera]</span></div>
+        <div class="story-detail"><small>Cocción</small><span>[## días]</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     05  REVEAL — lens interaction
+     Layer 1 (bottom): hidden/secondary image
+     Layer 2 (middle): primary bg with mask hole
+     No bottle here — pure background effect
+════════════════════════════════════ -->
+<section id="reveal">
+  <!-- LAYER 1 · revealed image · replace URL with your secondary image -->
+  <div class="bg-hidden"
+    style="background-image:url('images/animas_01.jpg');">
+  </div>
+  <!-- LAYER 2 · primary masked bg · replace URL with your primary image -->
+  <div class="bg-mask" id="bgMask"
+    style="background-image:url('images/animas_02.jpg');">
+  </div>
+
+  <!--
+    CENTERED SENTENCE — shown in the middle of the section
+    Replace the placeholder text with your sentence.
+    Remove this block entirely if you don't want it.
+  -->
+  <div class="reveal-sentence">
+    <p>[Una sola oración — la frase que define el espíritu de la marca. Puede ser una verdad, un deseo, una contradicción.]</p>
+  </div>
+
+  <div class="reveal-caption">
+    <span class="hint">Mueve el cursor para revelar</span>
+    <h2>El<br><em>espíritu</em></h2>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     06  COLOPHON — closing text
+════════════════════════════════════ -->
+<section id="colophon">
+  <div class="colophon-inner fade-in">
+
+    <!--
+      COLOPHON ILLUSTRATION
+      Replace placeholder with: <img src="illustrations/colophon.png" alt="">
+      Same size as other section illustrations (~110x110 px)
+    -->
+    <div class="section-illustration">
+      <div class="section-illustration-frame">
+        <!-- REPLACE ↓ with <img src="illustrations/colophon.png" alt=""> -->
+        <div class="illus-ph"><span>Ilustración<br>Colofón</span></div>
+      </div>
+    </div>
+
+    <div class="colophon-text">
+      <span class="section-label">06 &mdash; Colofón</span>
+      <p>[Párrafo final — el cierre de la historia. Puede ser una reflexión sobre el mezcal, la muerte, la vida, el tiempo. O una declaración de intenciones de la marca. Honesto, breve, resonante.]</p>
+      <p>[Segundo párrafo opcional — un verso, una cita, una despedida. Algo que el visitante se lleve consigo.]</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     MOOD CAROUSEL — after colophon
+     To disable: set MOOD_CAROUSEL_ENABLED = false in the script below
+════════════════════════════════════ -->
+<section id="mood-carousel-section" style="background:var(--ink);padding:clamp(4rem,6vw,6rem) 0;overflow:hidden;border-top:1px solid rgba(154,123,79,0.06);">
+  <div id="mood-track-outer" style="width:100%;overflow:hidden;">
+    <div id="mood-track" style="display:flex;gap:clamp(1rem,2vw,1.8rem);width:max-content;will-change:transform;">
+      <!--
+        MOOD IMAGES — add or replace src paths with your own photography.
+        These images are intentionally small (no lightbox), just for atmosphere.
+        Aspect ratios can vary; heights are unified via CSS.
+        Duplicate the set so the loop is seamless.
+      -->
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:2.5rem;">
+    <span style="font-family:var(--sans);font-size:0.48rem;letter-spacing:0.45em;color:rgba(154,123,79,0.3);text-transform:uppercase;font-weight:200;">Noche de Muertos</span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     07  CONTACTO
+════════════════════════════════════ -->
+<section id="contact">
+  <div class="contact-inner">
+    <!--
+      SECTION ILLUSTRATION — 07 Contacto
+      Replace placeholder with: <img src="illustrations/07-contacto.png" alt="">
+    -->
+    <div class="section-illustration fade-in">
+      <div class="section-illustration-frame">
+        <!-- REPLACE ↓ with <img src="illustrations/07-contacto.png" alt=""> -->
+        <div class="illus-ph"><span>Ilustración<br>07 — Contacto</span></div>
+      </div>
+    </div>
+
+    <span class="section-label" style="color:var(--gold);display:block;margin-bottom:1.5rem;">07 &mdash; Contacto</span>
+    <h2>Hablemos<br><em>sin intermediarios</em></h2>
+    <p>Para distribución, prensa, colaboraciones<br>o simplemente para saber más del mezcal.</p>
+    <form class="contact-form" onsubmit="return false;">
+      <div class="form-row">
+        <div class="form-field"><input type="text"  placeholder="Nombre"></div>
+        <div class="form-field"><input type="email" placeholder="Correo electrónico"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><input type="text" placeholder="País / Ciudad"></div>
+        <div class="form-field">
+          <select>
+            <option value="" disabled selected>Motivo</option>
+            <option>Distribución</option>
+            <option>Prensa &amp; Medios</option>
+            <option>Colaboración artística</option>
+            <option>Visita a la destilería</option>
+            <option>Otro</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <textarea placeholder="Mensaje"></textarea>
+      </div>
+      <button class="btn-send" type="submit">Enviar mensaje</button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-col">
+      <h4>La marca</h4>
+      <p>Mezcal artesanal elaborado<br>en los Valles Centrales de Oaxaca.</p>
+      <br>
+      <h4>Síguenos</h4>
+      <a href="#">Instagram</a>
+      <a href="#">Facebook</a>
+    </div>
+    <div class="footer-brand-col">
+      <span class="footer-wordmark">NdM</span>
+      <span class="footer-tagline">Mezcal Artesanal · Oaxaca</span>
+    </div>
+    <div class="footer-col footer-col-right">
+      <h4>Distribución</h4>
+      <p>[Ciudad, País]</p>
+      <p>[Ciudad, País]</p>
+      <br>
+      <h4>Contacto directo</h4>
+      <a href="mailto:hola@ndmmezcal.com">hola@ndmmezcal.com</a>
+      <a href="tel:+521234567890">+52 (123) 456 7890</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; [MMXXI] Noche de Muertos Mezcal &mdash; Todos los derechos reservados</p>
+    <div class="footer-legal">
+      <a href="#">Aviso de privacidad</a>
+      <a href="#">Términos de uso</a>
+      <a href="#">Distribuidores</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── CURSOR ──────────────────────────────────
+const dot  = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx = -200, my = -200, rx = -200, ry = -200;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  dot.style.left = mx + 'px';
+  dot.style.top  = my + 'px';
+});
+document.addEventListener('mouseleave', () => { dot.classList.add('off'); ring.classList.add('off'); });
+document.addEventListener('mouseenter', () => { dot.classList.remove('off'); ring.classList.remove('off'); });
+
+(function lagRing() {
+  rx += (mx - rx) * 0.11;
+  ry += (my - ry) * 0.11;
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  requestAnimationFrame(lagRing);
+})();
+
+// ── HAMBURGER ──────────────────────────────
+const menuBtn     = document.getElementById('menuBtn');
+const menuOverlay = document.getElementById('menu-overlay');
+
+menuBtn.addEventListener('click', () => {
+  const open = menuOverlay.classList.toggle('open');
+  menuBtn.classList.toggle('open', open);
+});
+document.querySelectorAll('.nav-link').forEach(a => {
+  a.addEventListener('click', () => {
+    menuOverlay.classList.remove('open');
+    menuBtn.classList.remove('open');
+  });
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    menuOverlay.classList.remove('open');
+    menuBtn.classList.remove('open');
+  }
+});
+
+// ── STICKY EMBLEM ──────────────────────────
+const emblem = document.getElementById('sticky-emblem');
+const heroEl = document.getElementById('hero');
+function checkEmblem() {
+  const b = heroEl.getBoundingClientRect().bottom;
+  emblem.classList.toggle('hidden', b < window.innerHeight * 0.55);
+}
+window.addEventListener('scroll', checkEmblem, { passive: true });
+checkEmblem();
+
+// ── HERO PARALLAX TEXT ─────────────────────
+const heroText = document.getElementById('hero-text');
+window.addEventListener('scroll', () => {
+  const p = Math.min(window.scrollY / window.innerHeight, 1);
+  heroText.style.transform = `translateY(${-p * 90}px)`;
+  heroText.style.opacity   = String(Math.max(1 - p * 1.6, 0));
+}, { passive: true });
+
+// ── BOTTLE ROTATION FRAMES ─────────────────────
+// ┌─────────────────────────────────────────────────────────────────┐
+// │  BOTTLE_FRAMES — edit this array to add / remove / reorder     │
+// │  frames. Use any path relative to this HTML file.              │
+// │  Order = left-to-right rotation arc.                           │
+// │  frame[0] = leftmost angle, frame[last] = rightmost angle.     │
+// └─────────────────────────────────────────────────────────────────┘
+const BOTTLE_FRAMES = [
+  //'images/bottle-rot-01.png',
+  //'images/bottle-rot-02.png',
+  //'images/bottle-rot-03.png',
+  'images/bottle-rot-04.png',
+  'images/bottle-rot-05.png',
+  'images/bottle-rot-06.png',
+  'images/bottle-rot-07.png',
+  'images/bottle-rot-08.png',
+  'images/bottle-rot-09.png',
+  'images/bottle-rot-10.png',
+  'images/bottle-rot-11.png',
+  'images/bottle-rot-12.png',
+  'images/bottle-rot-13.png',
+  'images/bottle-rot-14.png',
+  'images/bottle-rot-15.png',
+  //'images/bottle-rot-16.png',
+  //'images/bottle-rot-17.png',
+  //'images/bottle-rot-18.png',
+];
+
+// Build frame slots from the array — no HTML to hand-edit
+const bottleFloat = document.getElementById('bottle-float');
+const originEl    = document.getElementById('origin');
+
+BOTTLE_FRAMES.forEach((src, i) => {
+  const slot = document.createElement('div');
+  slot.className = 'bottle-img-slot' + (i === 0 ? ' active' : '');
+  slot.dataset.frame = i;
+  const img = document.createElement('img');
+  img.src = src;
+  img.alt = '';
+  img.draggable = false;
+  slot.appendChild(img);
+  bottleFloat.appendChild(slot);
+});
+
+const bottleSlots = bottleFloat.querySelectorAll('.bottle-img-slot');
+let activeFrame = 0;
+
+function setFrame(index) {
+  if (index === activeFrame) return;
+  bottleSlots[activeFrame].classList.remove('active');
+  bottleSlots[index].classList.add('active');
+  activeFrame = index;
+}
+
+// Parallax float + rotation frame on mouse move
+const maestroParallax  = document.getElementById('maestroParallax');
+const agaveImgParallax = document.querySelectorAll('.agave-img-parallax');
+
+document.addEventListener('mousemove', e => {
+  const rect = originEl.getBoundingClientRect();
+  if (e.clientY < rect.top || e.clientY > rect.bottom) return;
+
+  const cx = (e.clientX / window.innerWidth  - 0.5); // -0.5 → +0.5
+  const cy = (e.clientY / window.innerHeight - 0.5);
+
+  // Parallax offset — bottle (deepest layer)
+  const tx = cx * -22, ty = cy * -14;
+  bottleSlots.forEach(s => {
+    s.style.transform = `translateX(calc(-50% + ${tx}px)) translateY(${ty}px)`;
+  });
+
+  // Maestro — mid layer, opposite direction for depth feel
+  const mx2 = cx * 10, my2 = cy * 7;
+  maestroParallax.style.transform = `translate(${mx2}px, ${my2}px)`;
+
+  // Agave illustrations — lighter layer, same direction as maestro
+  const ax = cx * 14, ay = cy * 9;
+  agaveImgParallax.forEach(w => {
+    w.style.transform = `translate(${ax}px, ${ay}px)`;
+  });
+
+  // Rotation frame — map mouse X across the frame array
+  const t = Math.max(0, Math.min(1, (cx + 0.5 - 0.17) / 0.66));
+  const frameIndex = Math.round(t * (BOTTLE_FRAMES.length - 1));
+  setFrame(Math.max(0, Math.min(BOTTLE_FRAMES.length - 1, frameIndex)));
+});
+
+// Maestro swap still reacts to carousel (bottle does not)
+const maestroSlots     = document.querySelectorAll('.maestro-slot-agave');
+const agaveFloatSlots  = document.querySelectorAll('[data-agave-float]');
+
+function swapMaestro(index) {
+  maestroSlots.forEach(s => s.classList.toggle('active', +s.dataset.agave === index));
+  // Mobile maestro mirror
+  document.querySelectorAll('[data-agave-mobile]').forEach(s => {
+    s.classList.toggle('active', +s.dataset.agaveMobile === index);
+  });
+  agaveFloatSlots.forEach(s => {
+    s.style.display = (+s.dataset.agaveFloat === index) ? 'block' : 'none';
+  });
+}
+
+// ── AGAVE + EMBLEM CAROUSEL ────────────────────
+const track       = document.getElementById('carouselTrack');
+const dots        = document.querySelectorAll('.dot');
+const prev        = document.getElementById('prevBtn');
+const next        = document.getElementById('nextBtn');
+const emblemItems = document.querySelectorAll('.emblem-item');
+const total       = 5;
+let current       = 0;
+
+function updateEmblemCarousel(index) {
+  emblemItems.forEach((item, i) => {
+    item.classList.toggle('active', i === index);
+  });
+}
+
+function goTo(i) {
+  current = (i + total) % total;
+  track.style.transform = `translateX(${-current * 100}%)`;
+  dots.forEach((d, idx) => d.classList.toggle('active', idx === current));
+  swapMaestro(current);
+  updateEmblemCarousel(current);
+}
+
+prev.addEventListener('click', () => goTo(current - 1));
+next.addEventListener('click', () => goTo(current + 1));
+dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.index)));
+emblemItems.forEach(item => item.addEventListener('click', () => goTo(+item.dataset.index)));
+
+let touchStartX = 0;
+track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+track.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 40) goTo(dx < 0 ? current + 1 : current - 1);
+});
+
+updateEmblemCarousel(0);
+
+// ── REVEAL MASK ────────────────────────────
+const bgMask       = document.getElementById('bgMask');
+const revealSec    = document.getElementById('reveal');
+const LENS_R       = 100; // px radius
+
+function setMask(xPx, yPx) {
+  const v = `radial-gradient(circle ${LENS_R}px at ${xPx}px ${yPx}px, transparent 99%, black 100%)`;
+  bgMask.style.webkitMaskImage = v;
+  bgMask.style.maskImage       = v;
+}
+setMask(-500, -500); // park off-screen initially
+
+revealSec.addEventListener('mousemove', e => {
+  const r = revealSec.getBoundingClientRect();
+  setMask(e.clientX - r.left, e.clientY - r.top);
+});
+revealSec.addEventListener('mouseleave', () => setMask(-500, -500));
+
+// ── FADE-IN OBSERVER ───────────────────────
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
+
+// ── MOOD CAROUSEL ────────────────────────────────────────────────
+// ┌───────────────────────────────────────────────────────────────┐
+// │  MOOD_CAROUSEL_ENABLED — set to false to hide the whole       │
+// │  section without deleting any markup.                         │
+// │                                                               │
+// │  MOOD_IMAGES — add your own paths/URLs here.                  │
+// │  Any mix of portrait/landscape works; heights auto-unify.     │
+// └───────────────────────────────────────────────────────────────┘
+const MOOD_CAROUSEL_ENABLED = true;
+
+const MOOD_IMAGES = [
+  // 'images/mood-01.jpg',
+  // 'images/mood-02.jpg',
+  // 'images/mood-03.jpg',
+  // … add your real images above and remove the placeholders below
+];
+
+(function initMoodCarousel() {
+  const section = document.getElementById('mood-carousel-section');
+  if (!section) return;
+
+  if (!MOOD_CAROUSEL_ENABLED) {
+    section.style.display = 'none';
+    return;
+  }
+
+  const track = document.getElementById('mood-track');
+  if (!track) return;
+
+  // Build image tiles (or placeholders if array is empty)
+  function buildSet() {
+    if (MOOD_IMAGES.length === 0) {
+      // Placeholder tiles for layout preview
+      const labels = ['Agave','Horno','Maestro','Destilación','Mezcal','Campo','Fuego','Tierra','Noche','Ritual'];
+      return labels.map(lbl => {
+        const wrap = document.createElement('div');
+        wrap.className = 'mood-img-ph';
+        const sp = document.createElement('span');
+        sp.textContent = lbl;
+        wrap.appendChild(sp);
+        return wrap;
+      });
+    }
+    return MOOD_IMAGES.map(src => {
+      const wrap = document.createElement('div');
+      wrap.className = 'mood-img';
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = '';
+      img.draggable = false;
+      wrap.appendChild(img);
+      return wrap;
+    });
+  }
+
+  // Build two full sets for seamless loop
+  const setA = buildSet();
+  const setB = buildSet();
+  [...setA, ...setB].forEach(el => track.appendChild(el));
+
+  // Auto-scroll
+  let offset = 0;
+  let paused = false;
+  const SPEED = 0.4; // px per frame — lower = slower
+
+  section.addEventListener('mouseenter', () => { paused = true; });
+  section.addEventListener('mouseleave', () => { paused = false; });
+
+  function scrollMood() {
+    if (!paused) {
+      offset += SPEED;
+      // Reset when first half has scrolled fully off
+      const halfWidth = track.scrollWidth / 2;
+      if (offset >= halfWidth) offset -= halfWidth;
+      track.style.transform = `translateX(-${offset}px)`;
+    }
+    requestAnimationFrame(scrollMood);
+  }
+  requestAnimationFrame(scrollMood);
+})();
+
+
+const originSection = document.getElementById('origin');
+const carouselBtns  = document.querySelectorAll('.carousel-edge-btn');
+const carouselVis   = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    carouselBtns.forEach(b => b.classList.toggle('carousel-visible', e.isIntersecting));
+  });
+}, { threshold: 0.2 });
+carouselVis.observe(originSection);
+</script>
+</body>
+</html>
